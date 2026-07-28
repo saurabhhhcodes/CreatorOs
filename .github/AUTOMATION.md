@@ -5,7 +5,9 @@ This repository uses **simple, lightweight GitHub Actions** to automate issue ma
 ## What's Automated
 
 ### 1. **Auto-Label Issues** (`.github/workflows/auto-label.yml`)
+
 Runs when issues are opened or edited.
+
 - Detects: bug, enhancement, documentation, question
 - Marks incomplete issues with `needs-info` label
 - No configuration needed - works out of the box
@@ -13,7 +15,9 @@ Runs when issues are opened or edited.
 **Script**: `scripts/auto-label.js`
 
 ### 2. **Issue Reminders** (`.github/workflows/issue-reminder.yml`)
+
 Runs every 12 hours.
+
 - Finds open assigned issues inactive for 32+ hours
 - Comments reminder once (avoids spam)
 - Asks for blockers, progress, and ETA
@@ -23,6 +27,7 @@ Runs every 12 hours.
 ## Local Testing
 
 ### Test Auto-Label
+
 ```bash
 export GITHUB_TOKEN="your_token"
 export GITHUB_REPOSITORY_OWNER="your_username"
@@ -33,6 +38,7 @@ node scripts/auto-label.js
 ```
 
 ### Test Reminders
+
 ```bash
 export GITHUB_TOKEN="your_token"
 export GITHUB_REPOSITORY_OWNER="your_username"
@@ -71,11 +77,12 @@ scripts/
 ✓ **Easy to debug** - Transparent logging  
 ✓ **No spam** - Reminds only once per issue  
 ✓ **Maintainable** - <100 lines per script  
-✓ **Zero config** - Works immediately  
+✓ **Zero config** - Works immediately
 
 ## Future Additions
 
 When you have more contributors, consider:
+
 - Stale issue auto-closing (30+ days inactive)
 - PR greetings for first-time contributors
 - Automatic assignment rotation

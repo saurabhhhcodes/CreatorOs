@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 const {
   EMAIL_SERVICE,
@@ -19,7 +19,9 @@ const {
  */
 function createTransporter() {
   if (!EMAIL_USER || !EMAIL_PASSWORD) {
-    throw new Error('Email transport is not configured. Set EMAIL_USER and EMAIL_PASSWORD.');
+    throw new Error(
+      "Email transport is not configured. Set EMAIL_USER and EMAIL_PASSWORD.",
+    );
   }
 
   const transporterOptions = {
@@ -42,7 +44,7 @@ function createTransporter() {
   }
 
   if (EMAIL_SECURE) {
-    transporterOptions.secure = EMAIL_SECURE === 'true';
+    transporterOptions.secure = EMAIL_SECURE === "true";
   } else if (EMAIL_PORT) {
     transporterOptions.secure = Number(EMAIL_PORT) === 465;
   }
@@ -58,10 +60,16 @@ function createTransporter() {
  * @param {Function} next - Express next middleware function
  * @returns {Promise<void>|void}
  */
-async function sendInvitationEmail({ to, inviterName, projectName, inviteUrl, personalMessage }) {
+async function sendInvitationEmail({
+  to,
+  inviterName,
+  projectName,
+  inviteUrl,
+  personalMessage,
+}) {
   const transporter = createTransporter();
   const from = EMAIL_FROM || EMAIL_USER;
-  const fromName = EMAIL_FROM_NAME || 'CreatorOS';
+  const fromName = EMAIL_FROM_NAME || "CreatorOS";
   const replyTo = EMAIL_REPLY_TO || from;
   const subject = `${inviterName} invited you to collaborate on ${projectName}`;
 
@@ -69,7 +77,7 @@ async function sendInvitationEmail({ to, inviterName, projectName, inviteUrl, pe
     <div style="font-family: Arial, sans-serif; color: #111; line-height: 1.5;">
       <h2 style="color: #0f172a;">You’ve been invited to collaborate</h2>
       <p><strong>${inviterName}</strong> has invited you to collaborate on <strong>${projectName}</strong>.</p>
-      ${personalMessage ? `<p><em>Message:</em> ${personalMessage}</p>` : ''}
+      ${personalMessage ? `<p><em>Message:</em> ${personalMessage}</p>` : ""}
       <p>Click the button below to accept the invitation and join the project.</p>
       <p style="text-align:center; margin: 32px 0;">
         <a href="${inviteUrl}" style="display:inline-block; padding:14px 24px; background:#22d3ee; color:#0f172a; text-decoration:none; border-radius:999px; font-weight:700;">Accept Invitation</a>
@@ -84,10 +92,14 @@ async function sendInvitationEmail({ to, inviterName, projectName, inviteUrl, pe
 
 Accept here: ${inviteUrl}
 
-${personalMessage ? `Message:
+${
+  personalMessage
+    ? `Message:
 ${personalMessage}
 
-` : ''}
+`
+    : ""
+}
 If the link does not work, paste it into your browser.`;
 
   return transporter.sendMail({
@@ -111,14 +123,14 @@ If the link does not work, paste it into your browser.`;
 async function sendVerificationEmail({ to, verificationLink, userName }) {
   const transporter = createTransporter();
   const from = EMAIL_FROM || EMAIL_USER;
-  const fromName = EMAIL_FROM_NAME || 'CreatorOS';
+  const fromName = EMAIL_FROM_NAME || "CreatorOS";
   const replyTo = EMAIL_REPLY_TO || from;
-  const subject = 'Verify Your CreatorOS Account';
+  const subject = "Verify Your CreatorOS Account";
 
   const html = `
     <div style="font-family: Arial, sans-serif; color: #111; line-height: 1.5;">
       <h2 style="color: #0f172a;">Verify Your Email Address</h2>
-      <p>Hi ${userName || 'there'},</p>
+      <p>Hi ${userName || "there"},</p>
       <p>Welcome to CreatorOS! Please verify your email address to activate your account.</p>
       <p style="text-align:center; margin: 32px 0;">
         <a href="${verificationLink}" style="display:inline-block; padding:14px 24px; background:#22d3ee; color:#0f172a; text-decoration:none; border-radius:999px; font-weight:700;">Verify Email Address</a>

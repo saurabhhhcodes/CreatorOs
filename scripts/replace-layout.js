@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
-const viewsDir = path.join(__dirname, '..', 'view');
-const partialsDir = path.join(viewsDir, 'partials', 'layout');
+const viewsDir = path.join(__dirname, "..", "view");
+const partialsDir = path.join(viewsDir, "partials", "layout");
 
 if (!fs.existsSync(partialsDir)) {
-    fs.mkdirSync(partialsDir, { recursive: true });
+  fs.mkdirSync(partialsDir, { recursive: true });
 }
 
 // 1. Create the sidebar partial based on the extracted dashboard layout
@@ -66,7 +66,7 @@ const sidebarContent = `<aside class="sidebar" id="sidebar" aria-label="Dashboar
     </div>
 </aside>`;
 
-fs.writeFileSync(path.join(partialsDir, 'sidebar.ejs'), sidebarContent, 'utf8');
+fs.writeFileSync(path.join(partialsDir, "sidebar.ejs"), sidebarContent, "utf8");
 
 // 2. Create the topbar partial
 const topbarContent = `<header class="topbar">
@@ -96,7 +96,7 @@ const topbarContent = `<header class="topbar">
     </div>
 </header>`;
 
-fs.writeFileSync(path.join(partialsDir, 'topbar.ejs'), topbarContent, 'utf8');
+fs.writeFileSync(path.join(partialsDir, "topbar.ejs"), topbarContent, "utf8");
 
 // 3. Create scripts partial
 const scriptsContent = `<script>
@@ -145,65 +145,84 @@ const scriptsContent = `<script>
     });
 </script>`;
 
-fs.writeFileSync(path.join(partialsDir, 'scripts.ejs'), scriptsContent, 'utf8');
+fs.writeFileSync(path.join(partialsDir, "scripts.ejs"), scriptsContent, "utf8");
 
-console.log('Created layout partials successfully.');
+console.log("Created layout partials successfully.");
 
 // 4. Update the files
 function getActiveNav(file) {
-    if (file.includes('dashboard')) return 'dashboard';
-    if (file.includes('analytics-dashboard') || file.includes('analytics')) return 'analytics';
-    if (file.includes('creator-crm')) return 'crm';
-    if (file.includes('dm-automation')) return 'dm-automation';
-    if (file.includes('settings')) return 'settings';
-    if (file.includes('my-links')) return 'my-links';
-    if (file.includes('suggestions')) return 'suggestions';
-    if (file.includes('vault')) return 'vault';
-    if (file.includes('home')) return 'home';
-    return '';
+  if (file.includes("dashboard")) return "dashboard";
+  if (file.includes("analytics-dashboard") || file.includes("analytics"))
+    return "analytics";
+  if (file.includes("creator-crm")) return "crm";
+  if (file.includes("dm-automation")) return "dm-automation";
+  if (file.includes("settings")) return "settings";
+  if (file.includes("my-links")) return "my-links";
+  if (file.includes("suggestions")) return "suggestions";
+  if (file.includes("vault")) return "vault";
+  if (file.includes("home")) return "home";
+  return "";
 }
 
-const filesToProcess = fs.readdirSync(viewsDir)
-    .filter(f => f.endsWith('.ejs') || f.endsWith('.html'))
-    .map(f => path.join(viewsDir, f));
+const filesToProcess = fs
+  .readdirSync(viewsDir)
+  .filter((f) => f.endsWith(".ejs") || f.endsWith(".html"))
+  .map((f) => path.join(viewsDir, f));
 
-filesToProcess.forEach(file => {
-    let content = fs.readFileSync(file, 'utf8');
-    let original = content;
+filesToProcess.forEach((file) => {
+  let content = fs.readFileSync(file, "utf8");
+  let original = content;
 
-    // Replace Sidebar
-    // Match either <aside class="sidebar"...>...</aside> or <!-- Sidebar --> ... </aside>
-    content = content.replace(/(?:<!-- Sidebar -->\s*)?<aside class="sidebar"[\s\S]*?<\/aside>/i, 
-        `<%- include('partials/layout/sidebar', { activeNav: '${getActiveNav(file)}' }) %>`);
+  // Replace Sidebar
+  // Match either <aside class="sidebar"...>...</aside> or <!-- Sidebar --> ... </aside>
+  content = content.replace(
+    /(?:<!-- Sidebar -->\s*)?<aside class="sidebar"[\s\S]*?<\/aside>/i,
+    `<%- include('partials/layout/sidebar', { activeNav: '${getActiveNav(file)}' }) %>`,
+  );
 
-    // Replace Topbar
-    content = content.replace(/(?:<!-- Topbar -->\s*)?<header class="topbar"[\s\S]*?<\/header>/i, 
-        `<%- include('partials/layout/topbar', { user: typeof user !== 'undefined' ? user : { initials: 'U', name: 'User' } }) %>`);
+  // Replace Topbar
+  content = content.replace(
+    /(?:<!-- Topbar -->\s*)?<header class="topbar"[\s\S]*?<\/header>/i,
+    `<%- include('partials/layout/topbar', { user: typeof user !== 'undefined' ? user : { initials: 'U', name: 'User' } }) %>`,
+  );
 
-    // Replace Scripts block if present (Theme Toggle & Sidebar Mobile Toggle)
-    // Some files have it wrapped in DOMContentLoaded, some don't.
-    // The easiest way is to match from "// Theme Toggle Logic" up to "// Sidebar Mobile Toggle" block
-    
-    // We can't safely strip it out via simple regex because of nested braces, so let's match the exact string chunks.
-    const scriptBlockRegex = /\s*\/\/\s*Theme Toggle Logic[\s\S]*?\/\/\s*Sidebar Mobile Toggle[\s\S]*?\}\);\s*\}\n/i;
-    content = content.replace(scriptBlockRegex, '');
-    
-    // In files like dashboard.ejs, after removing the script, we should inject the partial right before </body>
-    // Actually, better to inject `<%- include('partials/layout/scripts') %>` at the bottom of the body.
-    if (original.match(scriptBlockRegex) || original.includes('Theme Toggle Logic')) {
-        // If the file had it, add the partial before closing body if it's not already there
-        if (!content.includes('partials/layout/scripts')) {
-            content = content.replace(/<\/body>/i, `    <%- include('partials/layout/scripts') %>\n</body>`);
-        }
-    } else {
-         // Even if it didn't have it explicitly, it might need it if it uses the layout
-         if (content.includes('partials/layout/sidebar') && !content.includes('partials/layout/scripts')) {
-             content = content.replace(/<\/body>/i, `    <%- include('partials/layout/scripts') %>\n</body>`);
-         }
+  // Replace Scripts block if present (Theme Toggle & Sidebar Mobile Toggle)
+  // Some files have it wrapped in DOMContentLoaded, some don't.
+  // The easiest way is to match from "// Theme Toggle Logic" up to "// Sidebar Mobile Toggle" block
+
+  // We can't safely strip it out via simple regex because of nested braces, so let's match the exact string chunks.
+  const scriptBlockRegex =
+    /\s*\/\/\s*Theme Toggle Logic[\s\S]*?\/\/\s*Sidebar Mobile Toggle[\s\S]*?\}\);\s*\}\n/i;
+  content = content.replace(scriptBlockRegex, "");
+
+  // In files like dashboard.ejs, after removing the script, we should inject the partial right before </body>
+  // Actually, better to inject `<%- include('partials/layout/scripts') %>` at the bottom of the body.
+  if (
+    original.match(scriptBlockRegex) ||
+    original.includes("Theme Toggle Logic")
+  ) {
+    // If the file had it, add the partial before closing body if it's not already there
+    if (!content.includes("partials/layout/scripts")) {
+      content = content.replace(
+        /<\/body>/i,
+        `    <%- include('partials/layout/scripts') %>\n</body>`,
+      );
     }
-
-    if (content !== original) {
-        fs.writeFileSync(file, content, 'utf8');
-        console.log(`Updated ${path.basename(file)}`);
+  } else {
+    // Even if it didn't have it explicitly, it might need it if it uses the layout
+    if (
+      content.includes("partials/layout/sidebar") &&
+      !content.includes("partials/layout/scripts")
+    ) {
+      content = content.replace(
+        /<\/body>/i,
+        `    <%- include('partials/layout/scripts') %>\n</body>`,
+      );
     }
+  }
+
+  if (content !== original) {
+    fs.writeFileSync(file, content, "utf8");
+    console.log(`Updated ${path.basename(file)}`);
+  }
 });

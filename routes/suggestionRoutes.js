@@ -1,8 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getPage, getSuggestions } = require('../controller/suggestionController');
-const { generateSuggestionValidator } = require('../middleware/validators');
-
+const {
+  getPage,
+  getSuggestions,
+} = require("../controller/suggestionController");
+const { generateSuggestionValidator } = require("../middleware/validators");
 
 /**
  * @swagger
@@ -20,7 +22,7 @@ const { generateSuggestionValidator } = require('../middleware/validators');
  *       500:
  *         description: Internal server error
  */
-router.get('/', getPage);
+router.get("/", getPage);
 
 /**
  * @swagger
@@ -38,6 +40,6 @@ router.get('/', getPage);
  *       500:
  *         description: Internal server error
  */
-router.post('/', generateSuggestionValidator, getSuggestions);
+router.post("/", generateSuggestionValidator, getSuggestions);
 
 module.exports = router;

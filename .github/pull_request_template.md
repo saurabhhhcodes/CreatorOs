@@ -1,12 +1,15 @@
 ## 📝 Description
+
 <!-- Clear and concise description of what this PR does -->
 
 ## 🔗 Related Issues
+
 <!-- Link to related issues: Fixes #123, Relates to #456 -->
 
 Fixes #
 
 ## 📋 Type of Change
+
 <!-- Mark the type of change this PR represents -->
 
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
@@ -19,6 +22,7 @@ Fixes #
 - [ ] 🧪 Test update
 
 ## 🔄 Changes Made
+
 <!-- Detailed list of changes -->
 
 - Change 1
@@ -28,6 +32,7 @@ Fixes #
 ## ✅ Testing
 
 ### How to Test
+
 <!-- Steps to test your changes -->
 
 1.
@@ -35,17 +40,21 @@ Fixes #
 3.
 
 ### Test Coverage
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] E2E tests added/updated (if applicable)
 
 ## 📸 Screenshots (if applicable)
+
 <!-- Add screenshots or GIFs showing the changes -->
 
 ## 🚀 Deployment Notes
+
 <!-- Any special deployment steps or considerations? -->
 
 ## ⚠️ Breaking Changes
+
 <!-- List any breaking changes -->
 
 - None
@@ -63,6 +72,7 @@ Fixes #
 - [ ] I have linked related issues
 
 ## 📝 Additional Context
+
 <!-- Any other information that reviewers should know -->
 
 ---

@@ -1,4 +1,4 @@
-const { wantsHtml } = require('../utils/requestType');
+const { wantsHtml } = require("../utils/requestType");
 
 /**
  * @function errorHandler
@@ -11,14 +11,16 @@ function errorHandler(err, req, res, next) {
 
   const status = err.status && Number.isInteger(err.status) ? err.status : 500;
   const isClientError = status >= 400 && status < 500;
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = process.env.NODE_ENV === "production";
   const message = isClientError
-    ? (err.message || 'Bad Request')
-    : (isProduction ? 'Internal server error' : (err.message || 'Internal server error'));
+    ? err.message || "Bad Request"
+    : isProduction
+      ? "Internal server error"
+      : err.message || "Internal server error";
 
   if (wantsHtml(req)) {
-    return res.status(status).render('error', {
-      error: message
+    return res.status(status).render("error", {
+      error: message,
     });
   }
 

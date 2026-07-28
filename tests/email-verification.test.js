@@ -1,12 +1,12 @@
 /**
  * Email Verification Tests
- * 
+ *
  * Tests for email verification workflow during user registration
  * Covers: registration, verification token generation, email sending,
  * verification endpoint, resend functionality, login restrictions
  */
 
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 // Mock test scenarios - these can be run with a test framework like Jest or Mocha
 
@@ -16,17 +16,17 @@ const TEST_SCENARIOS = {
     name: "User Registration Creates Unverified Account",
     description: "When a user signs up, they should have isVerified: false",
     expectedFields: [
-      'isVerified === false',
-      'verificationToken exists',
-      'verificationTokenExpiry exists (24 hours from now)'
+      "isVerified === false",
+      "verificationToken exists",
+      "verificationTokenExpiry exists (24 hours from now)",
     ],
     testSteps: [
-      '1. POST /signup with valid name, email, password',
-      '2. User created in database',
-      '3. Verify user.isVerified === false',
-      '4. Verify user.verificationToken is a 64-char hex string (32 bytes)',
-      '5. Verify user.verificationTokenExpiry is approximately 24 hours in future'
-    ]
+      "1. POST /signup with valid name, email, password",
+      "2. User created in database",
+      "3. Verify user.isVerified === false",
+      "4. Verify user.verificationToken is a 64-char hex string (32 bytes)",
+      "5. Verify user.verificationTokenExpiry is approximately 24 hours in future",
+    ],
   },
 
   // Test 2: Verification token generation
@@ -34,17 +34,17 @@ const TEST_SCENARIOS = {
     name: "Verification Token is Cryptographically Secure",
     description: "Token should be generated using crypto.randomBytes(32)",
     security: [
-      'Token is 64 characters (hex-encoded 32 bytes)',
-      'Token is unique per user',
-      'Token is unpredictable',
-      'Token cannot be reused after verification'
+      "Token is 64 characters (hex-encoded 32 bytes)",
+      "Token is unique per user",
+      "Token is unpredictable",
+      "Token cannot be reused after verification",
     ],
     testSteps: [
-      '1. Generate multiple tokens',
-      '2. Verify all tokens are unique',
-      '3. Verify format matches /^[a-f0-9]{64}$/',
-      '4. Verify entropy is sufficient (not guessable)'
-    ]
+      "1. Generate multiple tokens",
+      "2. Verify all tokens are unique",
+      "3. Verify format matches /^[a-f0-9]{64}$/",
+      "4. Verify entropy is sufficient (not guessable)",
+    ],
   },
 
   // Test 3: Email sending
@@ -53,36 +53,37 @@ const TEST_SCENARIOS = {
     description: "User should receive email with verification link",
     expectedContent: [
       'Subject: "Verify Your CreatorOS Account"',
-      'Verification link with format: /verify-email?token={token}',
-      'User name in greeting',
-      'Clear call-to-action button',
-      '24-hour expiry notice'
+      "Verification link with format: /verify-email?token={token}",
+      "User name in greeting",
+      "Clear call-to-action button",
+      "24-hour expiry notice",
     ],
     testSteps: [
-      '1. POST /signup with valid data',
-      '2. Mock nodemailer transporter',
-      '3. Verify sendMail was called once',
-      '4. Verify email structure and content'
-    ]
+      "1. POST /signup with valid data",
+      "2. Mock nodemailer transporter",
+      "3. Verify sendMail was called once",
+      "4. Verify email structure and content",
+    ],
   },
 
   // Test 4: Email verification success
   verificationSuccess: {
     name: "Email Verification Sets isVerified = true",
-    description: "When user clicks verification link, account is marked verified",
+    description:
+      "When user clicks verification link, account is marked verified",
     expectedOutcome: [
-      'User.isVerified = true',
-      'User.verificationToken = null',
-      'User.verificationTokenExpiry = null',
-      'User can now login'
+      "User.isVerified = true",
+      "User.verificationToken = null",
+      "User.verificationTokenExpiry = null",
+      "User can now login",
     ],
     testSteps: [
-      '1. Create user with verification token',
-      '2. POST /verify-email with token',
-      '3. Verify user.isVerified === true',
-      '4. Verify token fields cleared',
-      '5. User should now be able to login'
-    ]
+      "1. Create user with verification token",
+      "2. POST /verify-email with token",
+      "3. Verify user.isVerified === true",
+      "4. Verify token fields cleared",
+      "5. User should now be able to login",
+    ],
   },
 
   // Test 5: Invalid token
@@ -91,14 +92,14 @@ const TEST_SCENARIOS = {
     description: "Non-existent token should fail gracefully",
     expectedResponse: {
       status: 400,
-      message: "Invalid verification link. Please request a new one."
+      message: "Invalid verification link. Please request a new one.",
     },
     testSteps: [
-      '1. POST /verify-email with random invalid token',
-      '2. Verify response status === 400',
-      '3. Verify error message displayed',
-      '4. User not marked as verified'
-    ]
+      "1. POST /verify-email with random invalid token",
+      "2. Verify response status === 400",
+      "3. Verify error message displayed",
+      "4. User not marked as verified",
+    ],
   },
 
   // Test 6: Expired token
@@ -107,15 +108,15 @@ const TEST_SCENARIOS = {
     description: "Token past 24-hour expiry should fail",
     expectedResponse: {
       status: 410,
-      message: "Verification link has expired. Please request a new one."
+      message: "Verification link has expired. Please request a new one.",
     },
     testSteps: [
-      '1. Create user with token expiry in past',
-      '2. POST /verify-email with expired token',
-      '3. Verify response status === 410',
-      '4. Verify resend option available',
-      '5. User not marked as verified'
-    ]
+      "1. Create user with token expiry in past",
+      "2. POST /verify-email with expired token",
+      "3. Verify response status === 410",
+      "4. Verify resend option available",
+      "5. User not marked as verified",
+    ],
   },
 
   // Test 7: Already verified
@@ -124,14 +125,14 @@ const TEST_SCENARIOS = {
     description: "Should return success message, not error",
     expectedResponse: {
       status: 200,
-      message: "Your email is already verified."
+      message: "Your email is already verified.",
     },
     testSteps: [
-      '1. Create verified user',
-      '2. Generate new token for same user',
-      '3. POST /verify-email with token',
-      '4. Verify response is still success'
-    ]
+      "1. Create verified user",
+      "2. Generate new token for same user",
+      "3. POST /verify-email with token",
+      "4. Verify response is still success",
+    ],
   },
 
   // Test 8: Login restriction for unverified
@@ -140,34 +141,35 @@ const TEST_SCENARIOS = {
     description: "Login should fail with verification required message",
     expectedResponse: {
       status: 403,
-      message: "Please verify your email address before logging in."
+      message: "Please verify your email address before logging in.",
     },
     testSteps: [
-      '1. Create unverified user (not verified)',
-      '2. POST /login with correct credentials',
-      '3. Verify response status === 403',
-      '4. Verify no JWT token issued',
-      '5. Verify unverifiedEmail returned for resend link'
-    ]
+      "1. Create unverified user (not verified)",
+      "2. POST /login with correct credentials",
+      "3. Verify response status === 403",
+      "4. Verify no JWT token issued",
+      "5. Verify unverifiedEmail returned for resend link",
+    ],
   },
 
   // Test 9: Resend verification email
   resendVerification: {
     name: "Resend Verification Email Updates Token",
-    description: "Requesting resend should generate new token and send new email",
+    description:
+      "Requesting resend should generate new token and send new email",
     expectedOutcome: [
-      'New verification token generated',
-      'New expiry time set (24 hours from now)',
-      'Old token invalidated',
-      'New email sent with new token'
+      "New verification token generated",
+      "New expiry time set (24 hours from now)",
+      "Old token invalidated",
+      "New email sent with new token",
     ],
     testSteps: [
-      '1. Create unverified user with old token',
-      '2. POST /resend-verification with email',
-      '3. Verify new token different from old',
-      '4. Verify new expiry time updated',
-      '5. Mock email to verify new link sent'
-    ]
+      "1. Create unverified user with old token",
+      "2. POST /resend-verification with email",
+      "3. Verify new token different from old",
+      "4. Verify new expiry time updated",
+      "5. Mock email to verify new link sent",
+    ],
   },
 
   // Test 10: Email address privacy
@@ -175,16 +177,16 @@ const TEST_SCENARIOS = {
     name: "Email Privacy - No User Enumeration",
     description: "Resend endpoint should not reveal whether email exists",
     expectedBehavior: [
-      'POST /resend-verification with unknown email returns success',
+      "POST /resend-verification with unknown email returns success",
       'User sees: "If that email address is in our system..."',
-      'No database errors leaked'
+      "No database errors leaked",
     ],
     testSteps: [
-      '1. POST /resend-verification with unknown email',
-      '2. Verify response status === 200',
-      '3. Verify generic success message',
-      '4. Verify no email sent'
-    ]
+      "1. POST /resend-verification with unknown email",
+      "2. Verify response status === 200",
+      "3. Verify generic success message",
+      "4. Verify no email sent",
+    ],
   },
 
   // Test 11: Google OAuth auto-verification
@@ -192,31 +194,32 @@ const TEST_SCENARIOS = {
     name: "Google OAuth Users Are Auto-Verified",
     description: "Google OAuth sign-up should create verified account",
     expectedOutcome: [
-      'User.isVerified = true',
-      'No verification token needed',
-      'User can access dashboard immediately'
+      "User.isVerified = true",
+      "No verification token needed",
+      "User can access dashboard immediately",
     ],
     testSteps: [
-      '1. Complete Google OAuth flow',
-      '2. Verify new user created',
-      '3. Verify user.isVerified === true',
-      '4. Verify no verificationToken',
-      '5. User can access protected routes'
-    ]
+      "1. Complete Google OAuth flow",
+      "2. Verify new user created",
+      "3. Verify user.isVerified === true",
+      "4. Verify no verificationToken",
+      "5. User can access protected routes",
+    ],
   },
 
   // Test 12: Protect middleware checks verification
   protectMiddleware: {
     name: "Protected Routes Redirect Unverified Users",
-    description: "Middleware should check isVerified and redirect to resend page",
+    description:
+      "Middleware should check isVerified and redirect to resend page",
     testSteps: [
-      '1. Login as unverified user (should fail)',
-      '2. If somehow unverified user has token, accessing protected route',
-      '3. Middleware should fetch user from DB',
-      '4. Check isVerified field',
-      '5. Redirect to /resend-verification if unverified'
-    ]
-  }
+      "1. Login as unverified user (should fail)",
+      "2. If somehow unverified user has token, accessing protected route",
+      "3. Middleware should fetch user from DB",
+      "4. Check isVerified field",
+      "5. Redirect to /resend-verification if unverified",
+    ],
+  },
 };
 
 /**

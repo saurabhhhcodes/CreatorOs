@@ -32,7 +32,11 @@ async function autoLabel() {
     const labelsToAdd = [];
 
     // Detect issue type
-    if (content.includes("bug") || content.includes("error") || content.includes("broken")) {
+    if (
+      content.includes("bug") ||
+      content.includes("error") ||
+      content.includes("broken")
+    ) {
       if (!currentLabels.includes("bug")) {
         labelsToAdd.push("bug");
       }
@@ -44,11 +48,19 @@ async function autoLabel() {
       if (!currentLabels.includes("enhancement")) {
         labelsToAdd.push("enhancement");
       }
-    } else if (content.includes("doc") || content.includes("readme") || content.includes("guide")) {
+    } else if (
+      content.includes("doc") ||
+      content.includes("readme") ||
+      content.includes("guide")
+    ) {
       if (!currentLabels.includes("documentation")) {
         labelsToAdd.push("documentation");
       }
-    } else if (content.includes("?") || content.includes("how to") || content.includes("question")) {
+    } else if (
+      content.includes("?") ||
+      content.includes("how to") ||
+      content.includes("question")
+    ) {
       if (!currentLabels.includes("question")) {
         labelsToAdd.push("question");
       }

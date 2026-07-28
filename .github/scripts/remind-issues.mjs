@@ -47,7 +47,7 @@ async function remindIssues() {
       const hasReminder = comments.data.some(
         (comment) =>
           comment.user.login === "github-actions[bot]" &&
-          comment.body.includes("Any progress update")
+          comment.body.includes("Any progress update"),
       );
 
       if (hasReminder) {

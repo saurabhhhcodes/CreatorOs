@@ -39,7 +39,6 @@ JavaScript execution is the biggest cost.
 
 When Scripting > Rendering, the browser is spending lots of time running JS rather than drawing the page.
 
-
 Problems flagged:
 
 - _Render blockers_\- these files block the browser from rendering the page immediately, delaying FCP and LCP. Because Browser cannot render page until CSS + fonts are fetched. **Impact** - Fonts block first meaningful paint. Icon font CSS delays rendering entire layout.
