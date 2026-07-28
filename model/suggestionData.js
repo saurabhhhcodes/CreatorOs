@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * @schema suggestionSchema
@@ -11,11 +11,10 @@ const suggestionSchema = new mongoose.Schema({
   songs: [
     {
       title: String,
-      mood: String
-    }
-  ]
+      mood: String,
+    },
+  ],
 });
 
 module.exports =
-  mongoose.models.Suggestion ||
-  mongoose.model('Suggestion', suggestionSchema);
+  mongoose.models.Suggestion || mongoose.model("Suggestion", suggestionSchema);

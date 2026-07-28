@@ -1,9 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { getCreatorCrmPage, sendCollaboratorInvite } = require('../controller/collaborationController');
-const { preventContributorWrites } = require('../middleware/auth');
-const { inviteCollaboratorValidator } = require('../middleware/validators');
-
+const {
+  getCreatorCrmPage,
+  sendCollaboratorInvite,
+} = require("../controller/collaborationController");
+const { preventContributorWrites } = require("../middleware/auth");
+const { inviteCollaboratorValidator } = require("../middleware/validators");
 
 /**
  * @swagger
@@ -21,7 +23,7 @@ const { inviteCollaboratorValidator } = require('../middleware/validators');
  *       500:
  *         description: Internal server error
  */
-router.get('/', getCreatorCrmPage);
+router.get("/", getCreatorCrmPage);
 
 /**
  * @swagger
@@ -39,6 +41,11 @@ router.get('/', getCreatorCrmPage);
  *       500:
  *         description: Internal server error
  */
-router.post('/invite', preventContributorWrites, inviteCollaboratorValidator, sendCollaboratorInvite);
+router.post(
+  "/invite",
+  preventContributorWrites,
+  inviteCollaboratorValidator,
+  sendCollaboratorInvite,
+);
 
 module.exports = router;

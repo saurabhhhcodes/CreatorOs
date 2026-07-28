@@ -1,4 +1,8 @@
-const { fetchInstagramProfile, InstagramProfileError, validateUsername } = require('../utils/instagramProfileService');
+const {
+  fetchInstagramProfile,
+  InstagramProfileError,
+  validateUsername,
+} = require("../utils/instagramProfileService");
 
 const lookupTracker = new Map();
 
@@ -8,8 +12,8 @@ const lookupTracker = new Map();
  * @returns {any}
  */
 function getCooldownSeconds() {
-    const value = Number(process.env.INSTAGRAM_LOOKUP_COOLDOWN_SECONDS || 30);
-    return Number.isFinite(value) && value >= 0 ? value : 30;
+  const value = Number(process.env.INSTAGRAM_LOOKUP_COOLDOWN_SECONDS || 30);
+  return Number.isFinite(value) && value >= 0 ? value : 30;
 }
 
 /**
@@ -18,7 +22,7 @@ function getCooldownSeconds() {
  * @returns {any}
  */
 function getLookupKey(req) {
-    return req.user?.id || req.ip || 'anonymous';
+  return req.user?.id || req.ip || "anonymous";
 }
 
 /**
@@ -27,27 +31,27 @@ function getLookupKey(req) {
  * @returns {any}
  */
 function assertLookupAllowed(req) {
-    const cooldownSeconds = getCooldownSeconds();
+  const cooldownSeconds = getCooldownSeconds();
 
-    if (cooldownSeconds === 0) {
-        return;
-    }
+  if (cooldownSeconds === 0) {
+    return;
+  }
 
-    const lookupKey = getLookupKey(req);
-    const now = Date.now();
-    const nextAllowedAt = lookupTracker.get(lookupKey) || 0;
+  const lookupKey = getLookupKey(req);
+  const now = Date.now();
+  const nextAllowedAt = lookupTracker.get(lookupKey) || 0;
 
-    if (now < nextAllowedAt) {
-        const retryAfter = Math.ceil((nextAllowedAt - now) / 1000);
-        throw new InstagramProfileError(
-            'RATE_LIMITED',
-            `Please wait ${retryAfter} seconds before fetching another Instagram profile.`,
-            429,
-            { retryAfter }
-        );
-    }
+  if (now < nextAllowedAt) {
+    const retryAfter = Math.ceil((nextAllowedAt - now) / 1000);
+    throw new InstagramProfileError(
+      "RATE_LIMITED",
+      `Please wait ${retryAfter} seconds before fetching another Instagram profile.`,
+      429,
+      { retryAfter },
+    );
+  }
 
-    lookupTracker.set(lookupKey, now + cooldownSeconds * 1000);
+  lookupTracker.set(lookupKey, now + cooldownSeconds * 1000);
 }
 
 /**
@@ -56,24 +60,25 @@ function assertLookupAllowed(req) {
  * @returns {any}
  */
 function sendInstagramError(res, error) {
-    if (error instanceof InstagramProfileError) {
-        return res.status(error.statusCode).json({
-            success: false,
-            error: {
-                code: error.code,
-                message: error.message,
-                details: error.details,
-            },
-        });
-    }
-
-    return res.status(500).json({
-        success: false,
-        error: {
-            code: 'TEMPORARY_FETCH_ERROR',
-            message: 'Unable to fetch Instagram profile right now. Please try again later.',
-        },
+  if (error instanceof InstagramProfileError) {
+    return res.status(error.statusCode).json({
+      success: false,
+      error: {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+      },
     });
+  }
+
+  return res.status(500).json({
+    success: false,
+    error: {
+      code: "TEMPORARY_FETCH_ERROR",
+      message:
+        "Unable to fetch Instagram profile right now. Please try again later.",
+    },
+  });
 }
 
 /**
@@ -85,22 +90,22 @@ function sendInstagramError(res, error) {
  * @returns {Promise<void>|void}
  */
 async function getInstagramProfile(req, res) {
-    try {
-        const username = validateUsername(req.query.username);
+  try {
+    const username = validateUsername(req.query.username);
 
-        assertLookupAllowed(req);
+    assertLookupAllowed(req);
 
-        const profile = await fetchInstagramProfile(username);
+    const profile = await fetchInstagramProfile(username);
 
-        return res.json({
-            success: true,
-            data: profile,
-        });
-    } catch (error) {
-        return sendInstagramError(res, error);
-    }
+    return res.json({
+      success: true,
+      data: profile,
+    });
+  } catch (error) {
+    return sendInstagramError(res, error);
+  }
 }
 
 module.exports = {
-    getInstagramProfile,
+  getInstagramProfile,
 };

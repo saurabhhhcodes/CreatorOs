@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 /**
  * @schema inviteSchema
@@ -8,7 +8,7 @@ const inviteSchema = new mongoose.Schema(
   {
     inviter: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     email: {
@@ -20,7 +20,7 @@ const inviteSchema = new mongoose.Schema(
     projectName: {
       type: String,
       trim: true,
-      default: 'CreatorOS Collaboration',
+      default: "CreatorOS Collaboration",
     },
     token: {
       type: String,
@@ -29,8 +29,8 @@ const inviteSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'accepted', 'expired'],
-      default: 'pending',
+      enum: ["pending", "accepted", "expired"],
+      default: "pending",
     },
     message: {
       type: String,
@@ -42,10 +42,11 @@ const inviteSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-const MongooseInviteModel = mongoose.models.Invite || mongoose.model('Invite', inviteSchema);
+const MongooseInviteModel =
+  mongoose.models.Invite || mongoose.model("Invite", inviteSchema);
 
 const emptyInviteQuery = {
   sort() {
@@ -71,7 +72,7 @@ const MockInviteModel = {
     return {
       _id: new mongoose.Types.ObjectId().toString(),
       ...data,
-      status: 'pending',
+      status: "pending",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -87,7 +88,8 @@ function getActiveInviteModel() {
 const InviteModel = {
   countDocuments: (...args) => getActiveInviteModel().countDocuments(...args),
   findOne: (...args) => getActiveInviteModel().findOne(...args),
-  findByIdAndDelete: (...args) => getActiveInviteModel().findByIdAndDelete(...args),
+  findByIdAndDelete: (...args) =>
+    getActiveInviteModel().findByIdAndDelete(...args),
   find: (...args) => getActiveInviteModel().find(...args),
   create: (...args) => getActiveInviteModel().create(...args),
 };

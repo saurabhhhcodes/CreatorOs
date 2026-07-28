@@ -113,10 +113,10 @@ This PR implements a complete email verification system for user registration in
 
 ```javascript
 // Cryptographically secure, 256-bit entropy
-crypto.randomBytes(32).toString("hex")  // 64 hex characters
+crypto.randomBytes(32).toString("hex"); // 64 hex characters
 
 // 24-hour expiry
-new Date(Date.now() + 24 * 60 * 60 * 1000)
+new Date(Date.now() + 24 * 60 * 60 * 1000);
 ```
 
 ### User Registration Flow
@@ -160,31 +160,37 @@ POST /login
 ## Security Features
 
 ✅ **Cryptographic Token Generation**
+
 - 256-bit entropy using `crypto.randomBytes(32)`
 - Unique per user
 - Cannot be predicted or brute-forced
 
 ✅ **Time-Limited Tokens**
+
 - 24-hour expiry window
 - Server-side expiry validation
 - Expired tokens cannot be used
 
 ✅ **One-Time Use**
+
 - Token deleted after successful verification
 - Cannot be reused
 - Unique constraint prevents duplicates
 
 ✅ **Email Privacy**
+
 - Resend endpoint doesn't reveal user existence
 - No user enumeration possible
 - Generic success messages
 
 ✅ **Protected Routes**
+
 - Middleware checks `isVerified` status
 - Unverified users redirected
 - Cannot bypass with valid JWT
 
 ✅ **Secure Error Handling**
+
 - No stack traces exposed
 - Generic error messages
 - Proper HTTP status codes
@@ -197,13 +203,10 @@ POST /login
 
 ```javascript
 // Verify unique token for fast lookup
-db.users.createIndex(
-  { verificationToken: 1 },
-  { unique: true, sparse: true }
-)
+db.users.createIndex({ verificationToken: 1 }, { unique: true, sparse: true });
 
 // Find expired tokens for cleanup
-db.users.createIndex({ verificationTokenExpiry: 1 })
+db.users.createIndex({ verificationTokenExpiry: 1 });
 ```
 
 ### Migration for Existing Users
@@ -212,8 +215,8 @@ db.users.createIndex({ verificationTokenExpiry: 1 })
 // Mark existing users as verified (they already have access)
 db.users.updateMany(
   { isVerified: { $exists: false } },
-  { $set: { isVerified: true, verificationToken: null } }
-)
+  { $set: { isVerified: true, verificationToken: null } },
+);
 ```
 
 ---
@@ -255,6 +258,7 @@ EMAIL_FROM_NAME=CreatorOS
 Test file: `tests/email-verification.test.js`
 
 **Coverage:**
+
 - User registration creates unverified account
 - Verification token is cryptographically secure
 - Verification email is sent after signup
@@ -271,6 +275,7 @@ Test file: `tests/email-verification.test.js`
 ### Manual Testing Checklist
 
 See `tests/email-verification.test.js` for complete checklist including:
+
 - Registration & email sending
 - Email verification
 - Login restrictions
@@ -284,6 +289,7 @@ See `tests/email-verification.test.js` for complete checklist including:
 ## Breaking Changes
 
 **None.** This is a backward-compatible addition:
+
 - Existing unverified users marked as verified on deploy
 - Google OAuth users auto-verified
 - Existing login flow preserved
@@ -327,11 +333,13 @@ Before deploying:
 ## Performance Considerations
 
 ### Database Queries
+
 - `User.findOne({ verificationToken })` - O(1) with index
 - `User.findOne({ email })` - O(1) with existing index
 - Token verification happens in ~2ms
 
 ### Email Sending
+
 - Asynchronous (doesn't block signup)
 - Failures logged but don't prevent registration
 - Can be moved to queue service for scale
@@ -339,6 +347,7 @@ Before deploying:
 ### Recommended Indexes
 
 Already created in migration:
+
 - `verificationToken` (unique, sparse)
 - `verificationTokenExpiry` (for cleanup)
 
@@ -380,6 +389,7 @@ System Metrics:
 ## Future Enhancements
 
 Possible improvements:
+
 1. Rate limiting on resend (3 requests/hour)
 2. Verification reminders (12h, 24h, 48h)
 3. SMS verification option

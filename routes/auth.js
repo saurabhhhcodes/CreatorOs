@@ -1,74 +1,89 @@
 const express = require("express");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const { signup, login, handleGoogleCallback, loginAsContributor, verifyEmail, resendVerificationEmail } = require("../controller/auth");
-const { signupValidator, loginValidator, resendVerificationValidator } = require("../middleware/validators");
+const {
+  signup,
+  login,
+  handleGoogleCallback,
+  loginAsContributor,
+  verifyEmail,
+  resendVerificationEmail,
+} = require("../controller/auth");
+const {
+  signupValidator,
+  loginValidator,
+  resendVerificationValidator,
+} = require("../middleware/validators");
 const connectDB = require("../connect");
-const { signupLimiter, emailVerificationLimiter } = require("../middleware/rateLimiters");
+const {
+  signupLimiter,
+  emailVerificationLimiter,
+} = require("../middleware/rateLimiters");
 
 const router = express.Router();
 
 const googleAuthConfigured = Boolean(
-    process.env.GOOGLE_CLIENT_ID &&
-    process.env.GOOGLE_CLIENT_SECRET &&
-    process.env.GOOGLE_CALLBACK_URL
+  process.env.GOOGLE_CLIENT_ID &&
+  process.env.GOOGLE_CLIENT_SECRET &&
+  process.env.GOOGLE_CALLBACK_URL,
 );
 
 if (googleAuthConfigured) {
-    passport.use(
-        new GoogleStrategy(
-            {
-                clientID: process.env.GOOGLE_CLIENT_ID,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-                callbackURL: process.env.GOOGLE_CALLBACK_URL,
-            },
-            async (accessToken, refreshToken, profile, done) => {
-                try {
-                    await connectDB();
-                    const User = require("../model/user");
-                    const email = profile.emails?.[0]?.value?.toLowerCase();
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          await connectDB();
+          const User = require("../model/user");
+          const email = profile.emails?.[0]?.value?.toLowerCase();
 
-                    if (!email) {
-                        return done(null, false, { message: "Google account does not expose an email address." });
-                    }
+          if (!email) {
+            return done(null, false, {
+              message: "Google account does not expose an email address.",
+            });
+          }
 
-                    const googleUser = {
-                        googleId: profile.id,
-                        name: profile.displayName || email.split("@")[0],
-                        email,
-                        avatar: profile.photos?.[0]?.value,
-                        lastLoginAt: new Date(),
-                    };
+          const googleUser = {
+            googleId: profile.id,
+            name: profile.displayName || email.split("@")[0],
+            email,
+            avatar: profile.photos?.[0]?.value,
+            lastLoginAt: new Date(),
+          };
 
-                    let user = await User.findOne({ googleId: profile.id });
+          let user = await User.findOne({ googleId: profile.id });
 
-                    if (!user) {
-                        user = await User.findOne({ email });
-                    }
+          if (!user) {
+            user = await User.findOne({ email });
+          }
 
-                    if (user) {
-                        user.googleId = googleUser.googleId;
-                        user.name = user.name || googleUser.name;
-                        user.avatar = googleUser.avatar || user.avatar;
-                        user.authProvider = user.password ? user.authProvider : "google";
-                        user.lastLoginAt = googleUser.lastLoginAt;
-                        await user.save();
-                    } else {
-                        user = await User.create({
-                            ...googleUser,
-                            authProvider: "google",
-                        });
-                    }
+          if (user) {
+            user.googleId = googleUser.googleId;
+            user.name = user.name || googleUser.name;
+            user.avatar = googleUser.avatar || user.avatar;
+            user.authProvider = user.password ? user.authProvider : "google";
+            user.lastLoginAt = googleUser.lastLoginAt;
+            await user.save();
+          } else {
+            user = await User.create({
+              ...googleUser,
+              authProvider: "google",
+            });
+          }
 
-                    return done(null, user);
-                } catch (error) {
-                    return done(error);
-                }
-            }
-        )
-    );
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      },
+    ),
+  );
 }
-
 
 /**
  * @swagger
@@ -87,9 +102,8 @@ if (googleAuthConfigured) {
  *         description: Internal server error
  */
 router.get("/signup", (req, res) => {
-    res.render("signup", { error: null });
+  res.render("signup", { error: null });
 });
-
 
 /**
  * @swagger
@@ -108,17 +122,16 @@ router.get("/signup", (req, res) => {
  *         description: Internal server error
  */
 router.get("/login", (req, res) => {
-    const errorMessages = {
-        google_cancelled: "Google sign-in was cancelled.",
-        google_failed: "Google sign-in failed. Please try again.",
-    };
+  const errorMessages = {
+    google_cancelled: "Google sign-in was cancelled.",
+    google_failed: "Google sign-in failed. Please try again.",
+  };
 
-    res.render("login", {
-        error: errorMessages[req.query.error] || req.query.error || null,
-        googleAuthConfigured,
-    });
+  res.render("login", {
+    error: errorMessages[req.query.error] || req.query.error || null,
+    googleAuthConfigured,
+  });
 });
-
 
 /**
  * @swagger
@@ -192,7 +205,6 @@ router.post("/login/contributor", loginValidator, loginAsContributor);
  */
 router.post("/api/auth/contributor-login", loginValidator, loginAsContributor);
 
-
 /**
  * @swagger
  * /auth/google:
@@ -210,17 +222,18 @@ router.post("/api/auth/contributor-login", loginValidator, loginAsContributor);
  *         description: Internal server error
  */
 router.get("/auth/google", (req, res, next) => {
-    if (!googleAuthConfigured) {
-        return res.redirect("/login?error=Google%20sign-in%20is%20not%20configured%20yet.");
-    }
+  if (!googleAuthConfigured) {
+    return res.redirect(
+      "/login?error=Google%20sign-in%20is%20not%20configured%20yet.",
+    );
+  }
 
-    return passport.authenticate("google", {
-        scope: ["profile", "email"],
-        session: false,
-        prompt: "select_account",
-    })(req, res, next);
+  return passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+    prompt: "select_account",
+  })(req, res, next);
 });
-
 
 /**
  * @swagger
@@ -238,18 +251,24 @@ router.get("/auth/google", (req, res, next) => {
  *       500:
  *         description: Internal server error
  */
-router.get("/auth/google/callback", (req, res, next) => {
+router.get(
+  "/auth/google/callback",
+  (req, res, next) => {
     if (req.query.error) {
-        const errorCode = req.query.error === "access_denied" ? "google_cancelled" : "google_failed";
-        return res.redirect(`/login?error=${errorCode}`);
+      const errorCode =
+        req.query.error === "access_denied"
+          ? "google_cancelled"
+          : "google_failed";
+      return res.redirect(`/login?error=${errorCode}`);
     }
 
     return passport.authenticate("google", {
-        failureRedirect: "/login?error=google_failed",
-        session: false,
+      failureRedirect: "/login?error=google_failed",
+      session: false,
     })(req, res, next);
-}, handleGoogleCallback);
-
+  },
+  handleGoogleCallback,
+);
 
 /**
  * @swagger
@@ -268,9 +287,12 @@ router.get("/auth/google/callback", (req, res, next) => {
  *         description: Internal server error
  */
 router.get("/verify-email", (req, res) => {
-    res.render("verify-email", { error: null, success: null, expiredToken: false });
+  res.render("verify-email", {
+    error: null,
+    success: null,
+    expiredToken: false,
+  });
 });
-
 
 /**
  * @swagger
@@ -290,7 +312,6 @@ router.get("/verify-email", (req, res) => {
  */
 router.post("/verify-email", emailVerificationLimiter, verifyEmail);
 
-
 /**
  * @swagger
  * /resend-verification:
@@ -308,9 +329,8 @@ router.post("/verify-email", emailVerificationLimiter, verifyEmail);
  *         description: Internal server error
  */
 router.get("/resend-verification", (req, res) => {
-    res.render("resend-verification", { error: null, success: null });
+  res.render("resend-verification", { error: null, success: null });
 });
-
 
 /**
  * @swagger
@@ -328,8 +348,12 @@ router.get("/resend-verification", (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post("/resend-verification", emailVerificationLimiter, resendVerificationValidator, resendVerificationEmail);
-
+router.post(
+  "/resend-verification",
+  emailVerificationLimiter,
+  resendVerificationValidator,
+  resendVerificationEmail,
+);
 
 /**
  * @swagger
@@ -348,8 +372,8 @@ router.post("/resend-verification", emailVerificationLimiter, resendVerification
  *         description: Internal server error
  */
 router.get("/logout", (req, res) => {
-    res.clearCookie("token");
-    res.redirect("/login");
+  res.clearCookie("token");
+  res.redirect("/login");
 });
 
 module.exports = router;

@@ -57,14 +57,14 @@
 
 Every creator knows this chaos:
 
-| Tool | What You Use It For |
-|------|---------------------|
-| Linktree / Beacons | Bio links |
-| ManyChat | DM automation |
-| Notion / Notes | Content ideas |
-| Sheets / Notion | Brand deal tracking |
-| Later / Buffer | Scheduling |
-| Native dashboards | Analytics |
+| Tool               | What You Use It For |
+| ------------------ | ------------------- |
+| Linktree / Beacons | Bio links           |
+| ManyChat           | DM automation       |
+| Notion / Notes     | Content ideas       |
+| Sheets / Notion    | Brand deal tracking |
+| Later / Buffer     | Scheduling          |
+| Native dashboards  | Analytics           |
 
 **That's 6+ apps, 6+ subscriptions, 6+ logins — just to run your creator business.**
 
@@ -79,7 +79,9 @@ CreatorOS ends this. One platform. Everything connected. Zero context-switching.
 <td width="50%">
 
 ### 🔗 Smart Bio System
+
 Your link-in-bio, evolved.
+
 - Advanced, fully branded bio pages
 - Product showcase with buy buttons
 - Per-link redirect tracking
@@ -90,7 +92,9 @@ Your link-in-bio, evolved.
 <td width="50%">
 
 ### 🤖 DM Automation
+
 Turn every comment & DM into a conversion.
+
 - Keyword-triggered auto-replies
 - Instant free resource delivery
 - Funnel followers → products & newsletters
@@ -103,7 +107,9 @@ Turn every comment & DM into a conversion.
 <td width="50%">
 
 ### 🤝 Creator CRM
+
 Your brand deals, professionally managed.
+
 - Full collaboration pipeline
 - Payment tracking & invoicing
 - Sponsor contact database
@@ -114,7 +120,9 @@ Your brand deals, professionally managed.
 <td width="50%">
 
 ### 📊 Analytics Dashboard
+
 Know exactly what's working.
+
 - Instagram engagement insights
 - Link click heatmaps
 - Follower growth curves
@@ -127,7 +135,9 @@ Know exactly what's working.
 <td colspan="2">
 
 ### 🧠 Content OS
+
 Never stare at a blank screen again.
+
 - Idea bank with tagging & search
 - Script & caption storage
 - Visual post scheduler
@@ -144,15 +154,15 @@ Never stare at a blank screen again.
 
 <div align="center">
 
-| Layer | Technology |
-|-------|-----------|
-| **Frontend** | ![Next.js](https://img.shields.io/badge/Next.js-000?logo=nextdotjs&logoColor=white&style=flat-square) ![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black&style=flat-square) ![TailwindCSS](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=white&style=flat-square) |
-| **Backend** | ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white&style=flat-square) ![Express](https://img.shields.io/badge/Express-000?logo=express&logoColor=white&style=flat-square) |
-| **Database** | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=flat-square) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white&style=flat-square) |
-| **Auth** | ![Clerk](https://img.shields.io/badge/Clerk-6C47FF?logo=clerk&logoColor=white&style=flat-square) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black&style=flat-square) |
-| **Automation** | ![Instagram](https://img.shields.io/badge/Instagram%20Graph%20API-E4405F?logo=instagram&logoColor=white&style=flat-square) |
-| **AI** | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white&style=flat-square) ![OpenRouter](https://img.shields.io/badge/OpenRouter-FF6B35?style=flat-square) |
-| **Hosting** | ![Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=white&style=flat-square) ![Railway](https://img.shields.io/badge/Railway-0B0D0E?logo=railway&logoColor=white&style=flat-square) ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white&style=flat-square) |
+| Layer          | Technology                                                                                                                                                                                                                                                                                                             |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Frontend**   | ![Next.js](https://img.shields.io/badge/Next.js-000?logo=nextdotjs&logoColor=white&style=flat-square) ![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black&style=flat-square) ![TailwindCSS](https://img.shields.io/badge/Tailwind-06B6D4?logo=tailwindcss&logoColor=white&style=flat-square) |
+| **Backend**    | ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white&style=flat-square) ![Express](https://img.shields.io/badge/Express-000?logo=express&logoColor=white&style=flat-square)                                                                                                           |
+| **Database**   | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white&style=flat-square) ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white&style=flat-square)                                                                                                 |
+| **Auth**       | ![Clerk](https://img.shields.io/badge/Clerk-6C47FF?logo=clerk&logoColor=white&style=flat-square) ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?logo=firebase&logoColor=black&style=flat-square)                                                                                                             |
+| **Automation** | ![Instagram](https://img.shields.io/badge/Instagram%20Graph%20API-E4405F?logo=instagram&logoColor=white&style=flat-square)                                                                                                                                                                                             |
+| **AI**         | ![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white&style=flat-square) ![OpenRouter](https://img.shields.io/badge/OpenRouter-FF6B35?style=flat-square)                                                                                                                                    |
+| **Hosting**    | ![Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=white&style=flat-square) ![Railway](https://img.shields.io/badge/Railway-0B0D0E?logo=railway&logoColor=white&style=flat-square) ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=white&style=flat-square)      |
 
 </div>
 
@@ -352,7 +362,6 @@ http://localhost:3000
 
 > **Note**: In production, ensure your local development URL (`http://localhost:3000`) is replaced with your production domain (e.g., `https://your-domain.vercel.app`) in your environment configurations and OAuth settings.
 
-
 ## 📁 Project Structure
 
 ```
@@ -379,9 +388,9 @@ CreatorOS/
 
 <div align="center">
 
-| 📸 Instagram Influencers | 🎬 YouTubers | 🎓 Coaches & Solopreneurs |
-|:---:|:---:|:---:|
-| 📦 Digital Product Sellers | ✍️ Indie Creators | 🏷️ Brand Deal Hunters |
+|  📸 Instagram Influencers  |   🎬 YouTubers    | 🎓 Coaches & Solopreneurs |
+| :------------------------: | :---------------: | :-----------------------: |
+| 📦 Digital Product Sellers | ✍️ Indie Creators |   🏷️ Brand Deal Hunters   |
 
 </div>
 
@@ -498,7 +507,7 @@ Every contribution, no matter how small, helps us build something amazing for cr
 
 <br/>
 
-*If CreatorOS saves you time, give it a ⭐ — it means the world.*
+_If CreatorOS saves you time, give it a ⭐ — it means the world._
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer" width="100%"/>
 
@@ -507,12 +516,14 @@ Every contribution, no matter how small, helps us build something amazing for cr
 ## ✨ README Improvement Notes
 
 ### 📌 Formatting Enhancements Needed
+
 - Improve heading hierarchy for better readability
 - Ensure consistent spacing between sections
 - Use proper Markdown formatting for code blocks and lists
 - Align all installation and usage steps properly
 
 ### 🚀 Suggested Structure Upgrade
+
 - Introduction
 - Features
 - Tech Stack
@@ -523,10 +534,11 @@ Every contribution, no matter how small, helps us build something amazing for cr
 - License
 
 ### 🛠️ Documentation Improvements
+
 - Add badges (optional): build, license, contributors
 - Add screenshots for better UI understanding
 - Standardize code blocks for commands
 
 ### 🎯 Goal
-Improve onboarding experience for new contributors and users by making README more structured, readable, and professional
 
+Improve onboarding experience for new contributors and users by making README more structured, readable, and professional

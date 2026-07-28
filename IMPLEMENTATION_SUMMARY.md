@@ -9,7 +9,9 @@ This document summarizes all changes made to implement email verification during
 ## 📋 Implementation Overview
 
 ### Objective
+
 Implement a complete email verification workflow during user registration that:
+
 - Requires users to verify their email before accessing the platform
 - Uses secure cryptographic tokens with 24-hour expiry
 - Prevents login for unverified accounts
@@ -25,7 +27,9 @@ Implement a complete email verification workflow during user registration that:
 ### 1. **Database Layer**
 
 #### `model/user.js` - Added verification fields
+
 **Changes:**
+
 - Added `isVerified` (Boolean, default: false)
 - Added `verificationToken` (String, sparse unique index)
 - Added `verificationTokenExpiry` (Date, indexed)
@@ -46,7 +50,9 @@ verificationTokenExpiry: { type: Date, index: true },
 ### 2. **Email Service**
 
 #### `utils/email.js` - Added verification email function
+
 **Changes:**
+
 - Added `sendVerificationEmail()` function
 - Creates professional HTML email template
 - Includes verification link with token
@@ -63,7 +69,9 @@ async function sendVerificationEmail({ to, verificationLink, userName })
 ### 3. **Authentication Controller**
 
 #### `controller/auth.js` - Implemented verification logic
+
 **Changes:**
+
 - Added helper constants for token generation and expiry
 - Modified `signup()` to create unverified accounts
 - Added `verifyEmail()` endpoint handler
@@ -74,6 +82,7 @@ async function sendVerificationEmail({ to, verificationLink, userName })
 **Lines changed:** ~200 lines added/modified
 
 **New functions:**
+
 ```javascript
 function generateVerificationToken()
 function getVerificationTokenExpiry()
@@ -85,6 +94,7 @@ const resendVerificationEmail = asyncHandler(async (req, res, next) => { ... })
 ```
 
 **Key logic:**
+
 - Generates 32-byte cryptographic token
 - Sets expiry to 24 hours
 - Sends email on signup
@@ -97,7 +107,9 @@ const resendVerificationEmail = asyncHandler(async (req, res, next) => { ... })
 ### 4. **Routes**
 
 #### `routes/auth.js` - Added verification routes
+
 **Changes:**
+
 - Imported new controller functions
 - Added GET /verify-email route (displays form)
 - Added POST /verify-email route (validates token)
@@ -118,7 +130,9 @@ router.post("/resend-verification", resendVerificationEmail)
 ### 5. **Auth Middleware**
 
 #### `middleware/auth.js` - Added verification check
+
 **Changes:**
+
 - Modified `protect` middleware to check `isVerified`
 - Fetches user from database
 - Redirects unverified users to resend page
@@ -129,7 +143,7 @@ router.post("/resend-verification", resendVerificationEmail)
 ```javascript
 // New logic in protect middleware:
 if (!user.isVerified) {
-    return res.status(403).redirect("/resend-verification");
+  return res.status(403).redirect("/resend-verification");
 }
 ```
 
@@ -138,7 +152,9 @@ if (!user.isVerified) {
 ### 6. **Frontend - Sign Up**
 
 #### `view/signup.ejs` - Added success message
+
 **Changes:**
+
 - Added `.auth-success` CSS class
 - Added success message display
 - Shows links to resend or login when signup succeeds
@@ -148,11 +164,11 @@ if (!user.isVerified) {
 
 ```html
 <% if (typeof success !== 'undefined' && success) { %>
-    <div class="auth-success" role="alert">
-        <h3>✓ Account Created!</h3>
-        <p><%= success %></p>
-        <!-- Links to resend or login -->
-    </div>
+<div class="auth-success" role="alert">
+  <h3>✓ Account Created!</h3>
+  <p><%= success %></p>
+  <!-- Links to resend or login -->
+</div>
 <% } %>
 ```
 
@@ -161,7 +177,9 @@ if (!user.isVerified) {
 ### 7. **Frontend - Login**
 
 #### `view/login.ejs` - Added unverified user message
+
 **Changes:**
+
 - Added `.auth-unverified` CSS class for warning style
 - Added conditional display for unverified users
 - Shows resend verification link with email
@@ -171,11 +189,11 @@ if (!user.isVerified) {
 
 ```html
 <% if (typeof unverifiedEmail !== 'undefined' && unverifiedEmail) { %>
-    <div class="auth-unverified" role="alert">
-        <h3>📧 Email Not Verified</h3>
-        <p>Please verify your email address before logging in.</p>
-        <a href="/resend-verification?email=...">Resend Verification Email</a>
-    </div>
+<div class="auth-unverified" role="alert">
+  <h3>📧 Email Not Verified</h3>
+  <p>Please verify your email address before logging in.</p>
+  <a href="/resend-verification?email=...">Resend Verification Email</a>
+</div>
 <% } %>
 ```
 
@@ -186,9 +204,11 @@ if (!user.isVerified) {
 ### 1. **Verification Confirmation Page**
 
 #### `view/verify-email.ejs`
+
 **Purpose:** Display verification result (success/error)
 
 **Features:**
+
 - Success page with checkmark
 - Error page with error message
 - Expired token option to resend
@@ -202,9 +222,11 @@ if (!user.isVerified) {
 ### 2. **Resend Verification Page**
 
 #### `view/resend-verification.ejs`
+
 **Purpose:** Allow users to request a new verification email
 
 **Features:**
+
 - Email input form
 - Success/error message display
 - Privacy-friendly (no user enumeration)
@@ -218,9 +240,11 @@ if (!user.isVerified) {
 ### 3. **Test Suite**
 
 #### `tests/email-verification.test.js`
+
 **Purpose:** Comprehensive test coverage and manual testing guide
 
 **Content:**
+
 - 12 test scenarios with descriptions
 - Manual testing checklist
 - Jest integration test examples
@@ -241,9 +265,11 @@ if (!user.isVerified) {
 ### 4. **Documentation**
 
 #### `docs/EMAIL_VERIFICATION.md`
+
 **Purpose:** Complete implementation guide
 
 **Sections:**
+
 - Architecture overview
 - Database schema
 - API endpoint documentation
@@ -265,17 +291,20 @@ if (!user.isVerified) {
 ### Verification Token Security
 
 ✅ **Cryptographically Secure**
+
 - Uses `crypto.randomBytes(32)` - 256 bits of entropy
 - Hex-encoded to 64 characters
 - Cannot be predicted or brute-forced
 - Unique per user
 
 ✅ **Time-Limited**
+
 - 24-hour expiry window
 - Server-side expiry validation
 - Expired tokens cannot be used
 
 ✅ **One-Time Use**
+
 - Token deleted after successful verification
 - Cannot be reused
 - Unique constraint in database
@@ -283,6 +312,7 @@ if (!user.isVerified) {
 ### Email Privacy
 
 ✅ **No User Enumeration**
+
 - Resend endpoint returns success for unknown emails
 - Generic message prevents email address discovery
 - Prevents attacker reconnaissance
@@ -290,6 +320,7 @@ if (!user.isVerified) {
 ### Login Protection
 
 ✅ **Verification Enforced**
+
 - Middleware checks `isVerified` status
 - Cannot bypass with valid credentials
 - Redirects to resend page if unverified
@@ -297,6 +328,7 @@ if (!user.isVerified) {
 ### OAuth Auto-Verification
 
 ✅ **Trusted OAuth Providers**
+
 - Google OAuth users auto-verified
 - OAuth provider already verified email
 - No token delay for OAuth users
@@ -309,29 +341,29 @@ if (!user.isVerified) {
 
 ```javascript
 // verificationToken - unique sparse index
-db.users.createIndex({ verificationToken: 1 }, { unique: true, sparse: true })
+db.users.createIndex({ verificationToken: 1 }, { unique: true, sparse: true });
 
 // verificationTokenExpiry - for cleanup queries
-db.users.createIndex({ verificationTokenExpiry: 1 })
+db.users.createIndex({ verificationTokenExpiry: 1 });
 ```
 
 ### Query Patterns
 
 ```javascript
 // Find user by token
-User.findOne({ verificationToken: token })
+User.findOne({ verificationToken: token });
 
 // Find expired tokens (for cleanup)
-User.find({ verificationTokenExpiry: { $lt: new Date() } })
+User.find({ verificationTokenExpiry: { $lt: new Date() } });
 
 // Mark user verified
 User.updateOne(
-    { _id: userId },
-    { 
-        $set: { isVerified: true },
-        $unset: { verificationToken: "", verificationTokenExpiry: "" }
-    }
-)
+  { _id: userId },
+  {
+    $set: { isVerified: true },
+    $unset: { verificationToken: "", verificationTokenExpiry: "" },
+  },
+);
 ```
 
 ---
@@ -339,6 +371,7 @@ User.updateOne(
 ## 🔗 API Flow
 
 ### Registration Flow
+
 ```
 POST /signup
 ├─ Validate input
@@ -351,6 +384,7 @@ POST /signup
 ```
 
 ### Email Verification Flow
+
 ```
 POST /verify-email?token=TOKEN
 ├─ Find user by token
@@ -361,6 +395,7 @@ POST /verify-email?token=TOKEN
 ```
 
 ### Login Flow
+
 ```
 POST /login
 ├─ Find user by email
@@ -374,6 +409,7 @@ POST /login
 ```
 
 ### Resend Flow
+
 ```
 POST /resend-verification
 ├─ Find user by email
@@ -390,27 +426,32 @@ POST /resend-verification
 ## ✨ Features Implemented
 
 ### ✅ User Registration
+
 - [x] Create unverified accounts
 - [x] Generate secure tokens
 - [x] Send verification emails
 
 ### ✅ Email Verification
+
 - [x] Validate tokens
 - [x] Check token expiry
 - [x] Mark users as verified
 - [x] Clear tokens after use
 
 ### ✅ Login Protection
+
 - [x] Check verification status
 - [x] Prevent unverified login
 - [x] Show helpful error message
 
 ### ✅ Resend Verification
+
 - [x] Generate new tokens
 - [x] Send new emails
 - [x] Maintain privacy (no enumeration)
 
 ### ✅ Views & UX
+
 - [x] Verification success page
 - [x] Resend verification form
 - [x] Updated signup page
@@ -419,6 +460,7 @@ POST /resend-verification
 - [x] Responsive design
 
 ### ✅ Security
+
 - [x] Cryptographic token generation
 - [x] Token expiry validation
 - [x] One-time token use
@@ -426,6 +468,7 @@ POST /resend-verification
 - [x] Protected middleware check
 
 ### ✅ Email Delivery
+
 - [x] Professional template
 - [x] HTML + plain text
 - [x] Personalized greeting
@@ -433,11 +476,13 @@ POST /resend-verification
 - [x] Expiry information
 
 ### ✅ Google OAuth
+
 - [x] Auto-verification for OAuth users
 - [x] No verification token for OAuth
 - [x] Immediate dashboard access
 
 ### ✅ Error Handling
+
 - [x] Invalid token errors
 - [x] Expired token errors
 - [x] Already verified handling
@@ -445,6 +490,7 @@ POST /resend-verification
 - [x] User-friendly messages
 
 ### ✅ Testing & Documentation
+
 - [x] Comprehensive test suite
 - [x] Manual testing checklist
 - [x] Full documentation
@@ -458,6 +504,7 @@ POST /resend-verification
 Before deploying to production:
 
 ### Configuration
+
 - [ ] Set `APP_URL` environment variable
 - [ ] Configure email service credentials
 - [ ] Set `EMAIL_FROM` and `EMAIL_FROM_NAME`
@@ -465,17 +512,20 @@ Before deploying to production:
 - [ ] Test email delivery
 
 ### Database
+
 - [ ] Run migration for new fields
 - [ ] Create indexes on verification fields
 - [ ] Test database queries
 
 ### Security
+
 - [ ] Verify HTTPS is enabled
 - [ ] Check email credentials not in logs
 - [ ] Review error messages for leaks
 - [ ] Test rate limiting (if implemented)
 
 ### Testing
+
 - [ ] Run full test suite
 - [ ] Manual verification flow test
 - [ ] Test with real email address
@@ -483,6 +533,7 @@ Before deploying to production:
 - [ ] Test mobile responsiveness
 
 ### Monitoring
+
 - [ ] Set up error logging
 - [ ] Monitor email delivery
 - [ ] Track verification rates
@@ -493,6 +544,7 @@ Before deploying to production:
 ## 📈 Metrics to Track
 
 ### User Metrics
+
 - Registration rate
 - Email verification rate
 - Verification time (average)
@@ -500,6 +552,7 @@ Before deploying to production:
 - Resend request frequency
 
 ### System Metrics
+
 - Email send success rate
 - Email delivery time
 - Database query performance
@@ -517,9 +570,9 @@ If migrating from a system without verification:
 ```javascript
 // Mark all existing users as verified (they already have access)
 db.users.updateMany(
-    { isVerified: { $exists: false } },
-    { $set: { isVerified: true, verificationToken: null } }
-)
+  { isVerified: { $exists: false } },
+  { $set: { isVerified: true, verificationToken: null } },
+);
 
 // This way existing users are not locked out
 ```
@@ -529,17 +582,20 @@ db.users.updateMany(
 ## 📞 Support Resources
 
 ### Documentation
+
 - [EMAIL_VERIFICATION.md](./EMAIL_VERIFICATION.md) - Full technical guide
 - [tests/email-verification.test.js](../tests/email-verification.test.js) - Test examples
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Development guidelines
 
 ### Files Changed
+
 - Core: `model/user.js`, `controller/auth.js`, `utils/email.js`
 - Routes: `routes/auth.js`
 - Middleware: `middleware/auth.js`
 - Views: `view/signup.ejs`, `view/login.ejs`, `view/verify-email.ejs`, `view/resend-verification.ejs`
 
 ### Environment Setup
+
 ```bash
 # Required in .env
 EMAIL_USER=your-email@gmail.com
@@ -577,17 +633,20 @@ APP_URL=https://<your_production_domain>
 ## 📋 Code Quality
 
 ### Testing Coverage
+
 - ✅ 12 test scenarios documented
 - ✅ Manual testing checklist
 - ✅ Jest examples provided
 
 ### Documentation
+
 - ✅ 600+ line guide
 - ✅ API endpoint documentation
 - ✅ Architecture diagrams
 - ✅ Troubleshooting section
 
 ### Code Standards
+
 - ✅ Follows project conventions
 - ✅ Uses existing patterns
 - ✅ Consistent error handling

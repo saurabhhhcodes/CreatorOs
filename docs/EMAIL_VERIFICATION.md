@@ -6,7 +6,7 @@ This document describes the email verification feature implemented for CreatorOS
 
 **Status**: ✅ Fully Implemented  
 **Version**: 1.0  
-**Last Updated**: 2024  
+**Last Updated**: 2024
 
 ---
 
@@ -116,13 +116,14 @@ Three new fields added to the User schema:
 
 **Field Descriptions:**
 
-| Field | Type | Default | Purpose |
-|-------|------|---------|---------|
-| `isVerified` | Boolean | `false` | Whether user has verified their email |
-| `verificationToken` | String | `null` | Unique verification token (hex-encoded 32 bytes) |
-| `verificationTokenExpiry` | Date | `null` | When verification token expires (24 hours) |
+| Field                     | Type    | Default | Purpose                                          |
+| ------------------------- | ------- | ------- | ------------------------------------------------ |
+| `isVerified`              | Boolean | `false` | Whether user has verified their email            |
+| `verificationToken`       | String  | `null`  | Unique verification token (hex-encoded 32 bytes) |
+| `verificationTokenExpiry` | Date    | `null`  | When verification token expires (24 hours)       |
 
 **Indexes:**
+
 - `verificationToken`: Unique index (sparse) for fast lookup
 - `verificationTokenExpiry`: Index for cleanup queries
 
@@ -137,6 +138,7 @@ Three new fields added to the User schema:
 Creates a new unverified user account and sends verification email.
 
 **Request:**
+
 ```json
 {
   "name": "John Doe",
@@ -146,6 +148,7 @@ Creates a new unverified user account and sends verification email.
 ```
 
 **Response (Success):**
+
 ```json
 {
   "success": true,
@@ -158,11 +161,13 @@ Creates a new unverified user account and sends verification email.
 ```
 
 **Response (HTML):**
+
 ```html
 <!-- Redirects to signup.ejs with success message -->
 ```
 
 **Status Codes:**
+
 - `201`: User created successfully
 - `409`: Email already registered
 - `400`: Validation error
@@ -176,14 +181,17 @@ Creates a new unverified user account and sends verification email.
 Validates verification token and marks user as verified.
 
 **Query Parameters:**
+
 - `token` (required): Verification token from email link
 
 **Request:**
+
 ```
 POST /verify-email?token=a1b2c3d4e5f6...
 ```
 
 **Response (Success):**
+
 ```json
 {
   "success": true,
@@ -192,20 +200,23 @@ POST /verify-email?token=a1b2c3d4e5f6...
 ```
 
 **Response (HTML):**
+
 ```html
 <!-- verify-email.ejs with success message -->
 ```
 
 **Status Codes:**
+
 - `200`: Email verified successfully
 - `400`: Invalid or missing token
 - `410`: Token has expired
 
 **Errors:**
-| Status | Message | Action |
-|--------|---------|--------|
-| 400 | Invalid verification link | Request resend from /resend-verification |
-| 410 | Link expired | Resend verification email |
+
+| Status | Message                   | Action                                   |
+| ------ | ------------------------- | ---------------------------------------- |
+| 400    | Invalid verification link | Request resend from /resend-verification |
+| 410    | Link expired              | Resend verification email                |
 
 ---
 
@@ -226,6 +237,7 @@ Displays the email verification confirmation page.
 Generates new verification token and resends email.
 
 **Request:**
+
 ```json
 {
   "email": "john@example.com"
@@ -233,6 +245,7 @@ Generates new verification token and resends email.
 ```
 
 **Response (Success):**
+
 ```json
 {
   "success": true,
@@ -241,11 +254,13 @@ Generates new verification token and resends email.
 ```
 
 **Response (HTML):**
+
 ```html
 <!-- resend-verification.ejs with success -->
 ```
 
 **Status Codes:**
+
 - `200`: Email sent (or generic success even if user doesn't exist)
 - `400`: Email field missing
 - `500`: Email service error
@@ -261,6 +276,7 @@ Generates new verification token and resends email.
 Authenticates user - now includes verification check.
 
 **Request:**
+
 ```json
 {
   "email": "john@example.com",
@@ -269,6 +285,7 @@ Authenticates user - now includes verification check.
 ```
 
 **Response (Unverified):**
+
 ```json
 {
   "success": false,
@@ -278,6 +295,7 @@ Authenticates user - now includes verification check.
 ```
 
 **Status Codes:**
+
 - `200`: Login successful
 - `403`: Email not verified
 - `401`: Invalid credentials
@@ -388,9 +406,10 @@ Show: "Verification email sent!"
 ### Token Generation
 
 ✅ **Secure Token Generation**
+
 ```javascript
 function generateVerificationToken() {
-    return crypto.randomBytes(32).toString("hex");
+  return crypto.randomBytes(32).toString("hex");
 }
 ```
 
@@ -402,6 +421,7 @@ function generateVerificationToken() {
 ### Token Storage
 
 ✅ **Secure Storage**
+
 - Stored in plaintext in database (acceptable - tokens are one-time use)
 - Indexed for fast lookup
 - Deleted immediately after verification
@@ -410,9 +430,10 @@ function generateVerificationToken() {
 ### Token Expiry
 
 ✅ **Time-Limited Tokens**
+
 ```javascript
 function getVerificationTokenExpiry() {
-    return new Date(Date.now() + 24 * 60 * 60 * 1000);
+  return new Date(Date.now() + 24 * 60 * 60 * 1000);
 }
 ```
 
@@ -423,6 +444,7 @@ function getVerificationTokenExpiry() {
 ### Email Privacy
 
 ✅ **No User Enumeration**
+
 - Resend endpoint returns success for unknown emails
 - Generic message: "If that email is in our system..."
 - Prevents attackers from discovering registered email addresses
@@ -430,9 +452,10 @@ function getVerificationTokenExpiry() {
 ### Protected Routes
 
 ✅ **Verification Check in Middleware**
+
 ```javascript
 if (!user.isVerified) {
-    return res.status(403).redirect("/resend-verification");
+  return res.status(403).redirect("/resend-verification");
 }
 ```
 
@@ -443,6 +466,7 @@ if (!user.isVerified) {
 ### Google OAuth Auto-Verification
 
 ✅ **Automatic Verification for OAuth Users**
+
 - Google OAuth users marked as verified: `isVerified: true`
 - No token required
 - Rationale: OAuth provider verified the email
@@ -450,6 +474,7 @@ if (!user.isVerified) {
 ### Email Validation
 
 ✅ **Input Validation**
+
 - Email format validated with Zod schema
 - Email normalized (lowercase, trimmed)
 - Prevents injection and manipulation
@@ -457,6 +482,7 @@ if (!user.isVerified) {
 ### No Data Leakage
 
 ✅ **Secure Error Handling**
+
 - Generic error messages in responses
 - No stack traces exposed
 - Logging configured appropriately
@@ -517,7 +543,7 @@ function createTransporter() {
   if (EMAIL_HOST) {
     transporterOptions.host = EMAIL_HOST;
     transporterOptions.port = Number(EMAIL_PORT);
-    transporterOptions.secure = EMAIL_SECURE === 'true';
+    transporterOptions.secure = EMAIL_SECURE === "true";
   }
 
   return nodemailer.createTransport(transporterOptions);
@@ -541,6 +567,7 @@ Verification email includes:
 ### Email Service Providers
 
 Tested with:
+
 - ✅ Gmail (with App Passwords)
 - ✅ SendGrid
 - ✅ Mailgun
@@ -550,6 +577,7 @@ Tested with:
 ### Troubleshooting Email Issues
 
 **Emails not sending:**
+
 1. Verify credentials in `.env`
 2. Check email service logs
 3. Verify firewall/network allows SMTP
@@ -616,18 +644,18 @@ npm test
 
 ### File Changes Summary
 
-| File | Changes |
-|------|---------|
-| `model/user.js` | Added isVerified, verificationToken, verificationTokenExpiry fields |
-| `controller/auth.js` | Modified signup, login; added verifyEmail, resendVerificationEmail |
-| `routes/auth.js` | Added /verify-email, /resend-verification routes |
-| `middleware/auth.js` | Added isVerified check in protect middleware |
-| `utils/email.js` | Added sendVerificationEmail function |
-| `view/signup.ejs` | Added success message display |
-| `view/login.ejs` | Added unverified message display |
-| `view/verify-email.ejs` | **NEW** - Verification confirmation page |
-| `view/resend-verification.ejs` | **NEW** - Resend verification form |
-| `tests/email-verification.test.js` | **NEW** - Comprehensive test suite |
+| File                               | Changes                                                             |
+| ---------------------------------- | ------------------------------------------------------------------- |
+| `model/user.js`                    | Added isVerified, verificationToken, verificationTokenExpiry fields |
+| `controller/auth.js`               | Modified signup, login; added verifyEmail, resendVerificationEmail  |
+| `routes/auth.js`                   | Added /verify-email, /resend-verification routes                    |
+| `middleware/auth.js`               | Added isVerified check in protect middleware                        |
+| `utils/email.js`                   | Added sendVerificationEmail function                                |
+| `view/signup.ejs`                  | Added success message display                                       |
+| `view/login.ejs`                   | Added unverified message display                                    |
+| `view/verify-email.ejs`            | **NEW** - Verification confirmation page                            |
+| `view/resend-verification.ejs`     | **NEW** - Resend verification form                                  |
+| `tests/email-verification.test.js` | **NEW** - Comprehensive test suite                                  |
 
 ### Key Constants
 
@@ -650,6 +678,7 @@ const tokenLength = 32; // bytes
 **Symptoms:** Signup succeeds but no email received
 
 **Solutions:**
+
 - [ ] Verify EMAIL_USER and EMAIL_PASSWORD in .env
 - [ ] Check email service is configured correctly
 - [ ] Verify APP_URL is set correctly
@@ -662,6 +691,7 @@ const tokenLength = 32; // bytes
 **Symptoms:** Fresh email address returns duplicate error
 
 **Solutions:**
+
 - [ ] Check if email already in database
 - [ ] Verify email normalization (lowercase)
 - [ ] Check for duplicate indexes
@@ -672,6 +702,7 @@ const tokenLength = 32; // bytes
 **Symptoms:** Token valid for less than 24 hours
 
 **Solutions:**
+
 - [ ] Verify server time is correct
 - [ ] Check VERIFICATION_TOKEN_EXPIRY_MS constant
 - [ ] Verify database stores correct expiry time
@@ -682,6 +713,7 @@ const tokenLength = 32; // bytes
 **Symptoms:** User can login despite isVerified=false
 
 **Solutions:**
+
 - [ ] Verify protect middleware is applied
 - [ ] Check isVerified check in login controller
 - [ ] Verify middleware executes before login handler
@@ -692,6 +724,7 @@ const tokenLength = 32; // bytes
 **Symptoms:** Verification fails immediately with "Invalid token"
 
 **Solutions:**
+
 - [ ] Verify token is correctly stored in database
 - [ ] Check token in email matches database
 - [ ] Verify query parameter name (should be ?token=)
@@ -718,19 +751,19 @@ const tokenLength = 32; // bytes
 Consider adding a cron job to clean up expired tokens:
 
 ```javascript
-const cron = require('node-cron');
+const cron = require("node-cron");
 
 // Daily cleanup at 2 AM
-cron.schedule('0 2 * * *', async () => {
-    await User.updateMany(
-        { verificationTokenExpiry: { $lt: new Date() } },
-        {
-            $set: {
-                verificationToken: null,
-                verificationTokenExpiry: null
-            }
-        }
-    );
+cron.schedule("0 2 * * *", async () => {
+  await User.updateMany(
+    { verificationTokenExpiry: { $lt: new Date() } },
+    {
+      $set: {
+        verificationToken: null,
+        verificationTokenExpiry: null,
+      },
+    },
+  );
 });
 ```
 
